@@ -1,8 +1,8 @@
 from telebot import TeleBot
 
-from __init__ import app
+from provider_bot.__init__ import app
 from mindmeld.components.dialogue import Conversation
-from bot_db import create_database
+from provider_bot.bot_db import create_database
 
 bot = TeleBot(__name__)
 
@@ -44,8 +44,7 @@ def reply(message):
     bot.send_message(message['chat']['id'], resp)
 
 
-if __name__ == '__main__':
-    create_database()
-    bot.config['api_key'] = '1690556509:AAEejV2fvqsexl8KgWbtLsb1IjRbTujzHo0'
-    bot.poll(debug=True)
+create_database()
+bot.config['api_key'] = '1690556509:AAEejV2fvqsexl8KgWbtLsb1IjRbTujzHo0'
+bot.poll(debug=True)
 
