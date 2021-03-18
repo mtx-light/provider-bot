@@ -1,8 +1,9 @@
 # provider-bot
 
 ##How to install
-1.`virtualenv -p python3 .`
-2.`pip install -r requirements.txt`
+1. `virtualenv -p python3 .`
+2. `. ./bin/activate`
+3. `pip install -r requirements.txt`
 
 ##How to train
 `python -m provider_bot build `
