@@ -1,0 +1,17 @@
+Мій номер договору {12345678|sys_number|service_number}
+Договір {87654321|sys_number|service_number}
+Номер договору {21346578|sys_number|service_number}
+У мене номер договору {13243546|sys_number|service_number}
+{12348765|sys_number|service_number}
+Мій номер будинку {23|sys_number|house_number}
+Номер будинку {12|sys_number|house_number}
+Номер будинка {32|sys_number|house_number}
+Будинок номер {4|sys_number|house_number}
+{87|sys_number|house_number} будинок
+{87|sys_number|house_number} мій номер будинку
+Я живу в {87|sys_number|house_number} будинку
+Адреса {7|sys_number|house_number}
+{21346578|sys_number|service_number} договір мій
+Мій номер будинку {25|sys_number|house_number}
+Номер будинку {2|sys_number|house_number}
+Номер будинка {32|sys_number|house_number}
