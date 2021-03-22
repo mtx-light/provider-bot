@@ -43,22 +43,23 @@ with open(f'loggs/{timestamp()}.txt', 'w') as logger:
             conversations[username] = {}
             conversations[username]['data'] = {'username': username}
             conversations[username]['conversation'] = Conversation(app=app, context=conversations[username]['data'])
-        resp = conversations[username]['conversation'].say(request_text)[0]
+        resps = conversations[username]['conversation'].say(request_text)
 
-        print(username)
-        print(request_text)
-        history = conversations[username]['conversation'].history
-        if history:
-            intent = history[0]['request']['intent']
-            resp += f"\n[{intent}]"
-            if history[0]['request']['entities']:
-                resp += "\nEntities"
-                for e in history[0]['request']['entities']:
-                    resp += f"\n{e}"
-        logger.write(":::\n".join(str(l) for l in [timestamp(), username, request_text, resp, LOGEND]))
-        print(resp)
-        print(LOGEND, end='')
-        bot.send_message(message['chat']['id'], resp)
+        for resp in resps:
+            print(username)
+            print(request_text)
+            history = conversations[username]['conversation'].history
+            if history:
+                intent = history[0]['request']['intent']
+                resp += f"\n[{intent}]"
+                if history[0]['request']['entities']:
+                    resp += "\nEntities"
+                    for e in history[0]['request']['entities']:
+                        resp += f"\n{e}"
+            logger.write(":::\n".join(str(l) for l in [timestamp(), username, request_text, resp, LOGEND]))
+            print(resp)
+            print(LOGEND, end='')
+            bot.send_message(message['chat']['id'], resp)
 
 
     create_database()
