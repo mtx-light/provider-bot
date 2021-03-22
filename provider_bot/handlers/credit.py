@@ -79,8 +79,15 @@ def turn_on_credit_processing(request, responder):
     else:
         responder.frame['credit_process_count'] = responder.frame.get('credit_process_count', 0) + 1
         if responder.frame['credit_process_count'] < 3:
-            responder.params.target_dialogue_state = 'turn_on_credit_continue'
-            responder.reply('Перепрошую, я вас не зрозуміла.')
+            responder.frame['user'] = get_user_data(request.context['username'])
+            responder.frame['service_plan'] = get_service_plan(responder.frame['user']['service_plan_id'])
+            responder.params.target_dialogue_state = 'turn_on_credit_processing'
+            responder.reply('Перепрошую, я вас не зрозуміла.\n' +
+                            f'Ми можемо внести вам кредит довіри на суму {responder.frame["service_plan"]["price"]}' +
+                            f' до {str(datetime.now() + timedelta(days=10))[:10]}.' +
+                            f'Сплатити {abs(responder.frame["user"]["balance"]) + responder.frame["service_plan"]["price"]} грн '
+                            f'потрібно протягом 10 днів. ' +
+                            f'Вас влаштовують такі умови?')
             return
         else:
             responder.frame['credit_process_count'] = 0
