@@ -61,7 +61,8 @@ def create_dialog(dialog_name, steps, target_flag):
         handler.__name__ = step['name']
         steps_handlers.append(handler)
 
-    steps_handlers[0] = app.handle(intent=dialog_name)(steps_handlers[0])
+    #steps_handlers[0] = app.handle(intent=dialog_name)(steps_handlers[0])
+    steps_handlers[0] = app.handle(targeted_only=True)(steps_handlers[0])
     for i in range(len(steps_handlers) - 1):
         i = i + 1
         steps_handlers[i] = app.handle(targeted_only=True)(steps_handlers[i])
