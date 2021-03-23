@@ -2,9 +2,11 @@ from datetime import datetime, timedelta
 
 from provider_bot.root import app
 from provider_bot.bot_db import get_user_data, get_service_plan, set_credit_flag
+from provider_bot.utils.state_logger import logged
 
 
 @app.handle(intent='get_credit')
+@logged
 def get_credit(request, responder):
     responder.frame['user'] = get_user_data(request.context['username'])
     if responder.frame['user']['credit']:
@@ -24,6 +26,7 @@ def get_credit(request, responder):
 
 
 @app.handle(targeted_only=True)
+@logged
 def turn_on_credit(request, responder):
     if request.intent == 'abort':
         responder.reply('Зрозуміло. Чим ще можемо вам допомогти?')
@@ -53,6 +56,7 @@ def turn_on_credit(request, responder):
 
 
 @app.handle(targeted_only=True)
+@logged
 def turn_on_credit_continue(request, responder):
     responder.frame['user'] = get_user_data(request.context['username'])
     responder.frame['service_plan'] = get_service_plan(responder.frame['user']['service_plan_id'])
@@ -65,6 +69,7 @@ def turn_on_credit_continue(request, responder):
 
 
 @app.handle(targeted_only=True)
+@logged
 def turn_on_credit_processing(request, responder):
     if request.intent == 'confirmation':
         set_credit_flag(responder.frame['user']['id'], True)

@@ -5,11 +5,7 @@ from telebot import TeleBot
 from provider_bot.__init__ import app
 from mindmeld.components.dialogue import Conversation
 from provider_bot.bot_db import create_database
-
-LOGEND = "==========================\n"
-
-def timestamp():
-    return datetime.now().strftime("%Y%m%d%H%M%S")
+from provider_bot.utils.state_logger import timestamp, LOGEND
 
 with open(f'loggs/{timestamp()}.txt', 'w') as logger:
     bot = TeleBot(__name__)

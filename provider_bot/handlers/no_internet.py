@@ -1,8 +1,9 @@
 from provider_bot.root import app
 from provider_bot.bot_db import get_user_data
-
+from provider_bot.utils.state_logger import logged
 
 @app.handle(intent='no_internet')
+@logged
 def no_internet(request, responder):
     if not responder.frame.get('verified', False):
         responder.params.target_dialogue_state = 'verify_service_number'

@@ -1,8 +1,9 @@
 from provider_bot.root import app
 from provider_bot.bot_db import get_user_data, call_home_service
-
+from provider_bot.utils.state_logger import logged
 
 @app.handle(intent='home_service')
+@logged
 def home_service(request, responder):
     if request.intent == 'home_service':
         responder.reply('Ви бажаєте залишити заявку на виклик майстра додому?')
@@ -28,6 +29,7 @@ def home_service(request, responder):
 
 
 @app.handle(targeted_only=True)
+@logged
 def home_service_day_choice(request, responder):
     if request.intent == 'abort':
         responder.reply('Зрозуміло. Чим іще ми можемо вам допомогти?')
@@ -53,6 +55,7 @@ def home_service_day_choice(request, responder):
 
 
 @app.handle(targeted_only=True)
+@logged
 def home_service_hour_choice(request, responder):
     if request.intent == 'abort':
         responder.reply('Зрозуміло. Чим іще ми можемо вам допомогти?')

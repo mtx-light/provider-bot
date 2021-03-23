@@ -1,6 +1,7 @@
 from provider_bot.root import app
 from provider_bot.bot_db import get_user_data
 from provider_bot.handlers.general import default
+from provider_bot.utils.state_logger import logged
 
 
 def create_dialog(dialog_name, steps, target_flag):
@@ -62,10 +63,10 @@ def create_dialog(dialog_name, steps, target_flag):
         steps_handlers.append(handler)
 
     #steps_handlers[0] = app.handle(intent=dialog_name)(steps_handlers[0])
-    steps_handlers[0] = app.handle(targeted_only=True)(steps_handlers[0])
+    steps_handlers[0] = app.handle(targeted_only=True)(logged(steps_handlers[0]))
     for i in range(len(steps_handlers) - 1):
         i = i + 1
-        steps_handlers[i] = app.handle(targeted_only=True)(steps_handlers[i])
+        steps_handlers[i] = app.handle(targeted_only=True)(logged(steps_handlers[i]))
 
     return steps_handlers
 

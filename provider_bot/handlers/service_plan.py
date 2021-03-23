@@ -1,9 +1,11 @@
 from provider_bot.root import app
 from provider_bot.bot_db import get_user_data, get_service_plan
 from provider_bot.vocalizer import vocalized_name
+from provider_bot.utils.state_logger import logged
 
 
 @app.handle(intent='change_service_plan')
+@logged
 def change_service_plan(request, responder):
     for e in request.entities:
         if e['type'] == 'service_plan':
@@ -21,6 +23,7 @@ def change_service_plan(request, responder):
 
 
 @app.handle(targeted_only=True)
+@logged
 def change_service_plan_selection(request, responder):
     if request.intent == 'abort':
         responder.reply("Зрозуміло. Чим ще ми можемо вам допомогти?")
@@ -49,6 +52,7 @@ def change_service_plan_selection(request, responder):
 
 
 @app.handle(targeted_only=True)
+@logged
 def change_service_plan_confirm(request, responder):
     if request.intent == 'abort':
         responder.repeat('Зрозуміло. Чим ще ми можемо вам допомогти?')
@@ -74,6 +78,7 @@ def change_service_plan_confirm(request, responder):
 
 
 @app.handle(targeted_only=True)
+@logged
 def change_service_plan_changed(request, responder):
     if request.intent == 'abort':
         responder.repeat('Зрозуміло. Чим ще ми можемо вам допомогти?')
@@ -97,11 +102,13 @@ def change_service_plan_changed(request, responder):
 
 
 @app.handle(intent='stop_service')
+@logged
 def stop_service(request, responder):
     responder.reply("Зачекайте, ми з'єднаємо вас зі спеціалістом з подібних запитів.")
 
 
 @app.handle(intent='service_plan_description')
+@logged
 def service_plan_description(request, responder):
     responder.frame['user'] = get_user_data(request.context['username'])
     responder.frame['service_plan'] = get_service_plan(responder.frame['user']['service_plan_id'])
