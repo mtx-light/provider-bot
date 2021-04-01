@@ -71,3 +71,9 @@ def goodbye(request, responder):
 @logged
 def suicide(request, responder):
     responder.reply("Ми готові вас вислухати, зачекайте хвилинку.")
+
+
+@app.handle(intent='balance_and_home_service')
+@logged
+def balance_and_home_service(request, responder):
+    responder.reply("balance_and_home_service")
