@@ -55,7 +55,7 @@ def change_service_plan_selection(request, responder):
 @logged
 def change_service_plan_confirm(request, responder):
     if request.intent == 'abort':
-        responder.repeat('Зрозуміло. Чим ще ми можемо вам допомогти?')
+        responder.reply('Зрозуміло. Чим ще ми можемо вам допомогти?')
         return
     if request.intent == 'confirmation':
         responder.params.target_dialogue_state = 'change_service_plan_changed'
@@ -81,7 +81,7 @@ def change_service_plan_confirm(request, responder):
 @logged
 def change_service_plan_changed(request, responder):
     if request.intent == 'abort':
-        responder.repeat('Зрозуміло. Чим ще ми можемо вам допомогти?')
+        responder.reply('Зрозуміло. Чим ще ми можемо вам допомогти?')
         return
     if request.intent == 'confirmation':
         responder.reply("Ваш тарифний план змінено. Чим ще ми можемо вам допомогти?")
