@@ -15,11 +15,12 @@ with open('./tone-dict-uk.tsv') as tone_dict:
 def tone(text):
     score = 0
     count = 0
-    words = re.sub('\!\?\,\;', '', text).lower().split(' ')
-    for word in words:
+    words = re.sub('\!\?\,\;\.\_', '', text).lower().split(' ')
+    for idx, word in enumerate(words):
         normal_form = morph.parse(word)[0].normal_form
         if normal_form in tones:
-            print(normal_form)
-            score += tones.get(normal_form, 0)
+            #print(normal_form)
+            word_score = tones.get(normal_form, 0)
+            score += -word_score if idx > 0 and words[idx - 1].lower() == 'не' else word_score
             count += 1
     return score / count if count else 0
