@@ -132,3 +132,4 @@ share/doc
 .idea/
 
 loggs/*
+tests/loggs/*
