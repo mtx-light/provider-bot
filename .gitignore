@@ -133,3 +133,4 @@ share/doc
 
 loggs/*
 tests/loggs/*
+.generated/
