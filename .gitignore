@@ -133,4 +133,4 @@ share/doc
 
 loggs/*
 tests/loggs/*
-.generated/*
+provider_bot/.generated/*
