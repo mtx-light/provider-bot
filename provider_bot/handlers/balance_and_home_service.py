@@ -15,6 +15,25 @@ def in_days_constraint(date, days):
     limit = datetime.now() + timedelta(days=days)
     return day <= limit
 
+def show_balance(request, responder):
+    if responder.frame['with_balance']:
+        responder.frame['with_balance'] = False
+        balance = get_user_data(request.context['username'])['balance']
+        responder.reply(f"Ваш баланс: {balance}")
+
+def verify(request, responder, return_to):
+    if not responder.frame.get('verified', False):
+        responder.params.target_dialogue_state = 'verify_service_number'
+        responder.frame['return_to'] = return_to
+        responder.reply(f"Спочатку пройдіть верифікацію. Введіть 8 цифр вашого договору.")
+        return True
+    return False
+
+@app.handle(intent='home_service')
+@logged
+def home_service(request, responder):
+    responder.frame['with_balance'] = False
+    balance_and_home_service(request, responder)
 
 @app.handle(intent='balance_and_home_service')
 @logged
@@ -29,26 +48,27 @@ def balance_and_home_service(request, responder):
     for e in request.entities:
         if e['type'] == 'sys_time' and e['role'] == 'hour':
             hour = e['value'][0]['value']
-    if day and in_days_constraint(day, 10):
-        responder.frame['balance_and_home_service_day'] = day
-        if hour:
+    if (day and in_days_constraint(day, 10)) or responder.frame.get('balance_and_home_service_day'):
+        if not responder.frame.get('balance_and_home_service_day'):
+            responder.frame['balance_and_home_service_day'] = day
+        if hour or responder.frame.get('balance_and_home_service_hour'):
+            if not responder.frame.get('balance_and_home_service_hour'):
+                responder.frame['balance_and_home_service_hour'] = hour
             balance_and_home_service_hour(request, responder)
             return
         else:
+            if verify(request, responder, balance_and_home_service):
+                return
+            show_balance(request, responder)
             responder.params.target_dialogue_state = 'balance_and_home_service_hour'
             responder.reply('На яку годину ви бажаєте викликати майстра?')
             return
 
-    if not responder.frame.get('verified', False):
-        responder.params.target_dialogue_state = 'verify_service_number'
-        responder.frame['return_to'] = balance_and_home_service
-        responder.reply(f"Спочатку пройдіть верифікацію. Введіть 8 цифр вашого договору.")
+    if verify(request, responder, balance_and_home_service):
         return
     else:
         if request.intent in ['balance_and_home_service', 'verification']:
-            if responder.frame['with_balance']:
-                balance = get_user_data(request.context['username'])['balance']
-                responder.reply(f"Ваш баланс: {balance}")
+            show_balance(request, responder)
             responder.reply("Ви бажаєте залишити заявку на виклик майстра додому?")
             responder.params.target_dialogue_state = 'balance_and_home_service'
             return
@@ -84,7 +104,9 @@ def balance_and_home_service_day(request, responder):
     for e in request.entities:
         if e['type'] == 'sys_time' and e['role'] == 'hour':
             hour = e['value'][0]['value']
-    if not day or not in_days_constraint(day, 10):
+    if verify(request, responder, balance_and_home_service_day):
+        return
+    if (not day or not in_days_constraint(day, 10)) and not responder.frame.get('balance_and_home_service_day'):
         responder.frame['balance_and_home_service_day_count'] = responder.frame.get('balance_and_home_service_day_count', 0) + 1
         if responder.frame['balance_and_home_service_day_count'] < 3:
             future_date_limit = datetime.now() + timedelta(days=10)
@@ -98,12 +120,16 @@ def balance_and_home_service_day(request, responder):
             return
     else:
         if hour:
-            responder.frame['balance_and_home_service_day'] = day
-            responder.frame['balance_and_home_service_hour'] = hour
+            show_balance(request, responder)
+            if not responder.frame.get('balance_and_home_service_day'):
+                responder.frame['balance_and_home_service_day'] = day
+            if not responder.frame.get('balance_and_home_service_hour'):
+                responder.frame['balance_and_home_service_hour'] = hour
             responder.params.target_dialogue_state = 'balance_and_home_service_confirm'
             responder.reply(f'Ви хочете викликати майстра на {str(day)[:10]} {str(hour)[11:16]}?')
         else:
-            responder.frame['balance_and_home_service_day'] = day
+            if not responder.frame.get('balance_and_home_service_day'):
+                responder.frame['balance_and_home_service_day'] = day
             responder.params.target_dialogue_state = 'balance_and_home_service_hour'
             responder.reply('На яку годину ви бажаєте викликати майстра?')
             return
@@ -118,7 +144,9 @@ def balance_and_home_service_hour(request, responder):
     for e in request.entities:
         if e['type'] == 'sys_time' and e['role'] == 'hour':
             hour = e['value'][0]['value']
-    if not hour:
+    if verify(request, responder, balance_and_home_service_hour):
+        return
+    if not hour and not responder.frame.get('balance_and_home_service_hour'):
         responder.frame['balance_and_home_service_hour_count'] = responder.frame.get('balance_and_home_service_hour_count', 0) + 1
         if responder.frame['balance_and_home_service_hour_count'] < 3:
             responder.params.target_dialogue_state = 'balance_and_home_service_hour'
@@ -129,7 +157,11 @@ def balance_and_home_service_hour(request, responder):
             responder.reply('Зачекайте на з\'єднання з оператором.')
             return
     else:
-        responder.frame['balance_and_home_service_hour'] = hour
+        show_balance(request, responder)
+        if not responder.frame.get('balance_and_home_service_hour'):
+            responder.frame['balance_and_home_service_hour'] = hour
+        else:
+            hour = responder.frame['balance_and_home_service_hour']
         day = responder.frame['balance_and_home_service_day']
         responder.params.target_dialogue_state = 'balance_and_home_service_confirm'
         responder.reply(f'Ви хочете викликати майстра на {str(day)[:10]} {str(hour)[11:16]}?')
@@ -138,6 +170,8 @@ def balance_and_home_service_hour(request, responder):
 @app.handle(targeted_only=True)
 @logged
 def balance_and_home_service_confirm(request, responder):
+    if verify(request, responder, balance_and_home_service_confirm):
+        return
     if request.intent == 'abort':
         responder.reply('На який день ви бажаєте викликати майстра?')
         responder.params.target_dialogue_state = 'balance_and_home_service_day'
