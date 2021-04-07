@@ -10,3 +10,17 @@ def is_aggressive(text):
         if w in words:
             return True
     return False
+
+def aggressive_filter(state):
+    def _state(request, responder):
+        if not is_aggressive(request.text):
+            state(request, responder)
+        else:
+            responder.frame["aggressive_count"] = responder.frame.get("aggressive_count", 0) + 1
+            if responder.frame["aggressive_count"] > 3:
+                responder.frame["aggressive_count"] = 0
+                responder.reply("Заспокойтесь, ми з'єднаємо вас з оператором!")
+            else:
+                responder.reply("Скоро до оператора договоришся.")
+    _state.__name__ = state.__name__
+    return _state

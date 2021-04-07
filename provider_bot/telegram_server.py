@@ -6,7 +6,6 @@ from provider_bot.__init__ import app
 from mindmeld.components.dialogue import Conversation
 from provider_bot.bot_db import create_database
 from provider_bot.utils.state_logger import timestamp, LOGEND
-from utils.aggressive import is_aggressive
 
 with open(f'loggs/{timestamp()}.txt', 'w') as logger:
     bot = TeleBot(__name__)
@@ -41,25 +40,19 @@ with open(f'loggs/{timestamp()}.txt', 'w') as logger:
             conversations[username]['data'] = {'username': username}
             conversations[username]['conversation'] = Conversation(app=app, context=conversations[username]['data'])
 
-        if is_aggressive(request_text):
-            resps = ["Заспокойтесь, ми з'єднаємо вас з оператором!"]
-            aggressive = True
-        else:
-            resps = conversations[username]['conversation'].say(request_text)
-            aggressive = False
+        resps = conversations[username]['conversation'].say(request_text)
 
         for resp in resps:
             print(username)
             print(request_text)
-            if not aggressive:
-                history = conversations[username]['conversation'].history
-                if history:
-                    intent = history[0]['request']['intent']
-                    resp += f"\n[{intent}]"
-                    if history[0]['request']['entities']:
-                        resp += "\nEntities"
-                        for e in history[0]['request']['entities']:
-                            resp += f"\n{e}"
+            history = conversations[username]['conversation'].history
+            if history:
+                intent = history[0]['request']['intent']
+                resp += f"\n[{intent}]"
+                if history[0]['request']['entities']:
+                    resp += "\nEntities"
+                    for e in history[0]['request']['entities']:
+                         resp += f"\n{e}"
             logger.write(":::\n".join(str(l) for l in [timestamp(), username, request_text, resp, LOGEND]))
             print(resp)
             print(LOGEND, end='')

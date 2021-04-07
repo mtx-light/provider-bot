@@ -2,10 +2,11 @@ from provider_bot.root import app
 from provider_bot.bot_db import get_user_data
 from provider_bot.vocalizer import vocalized_name
 from provider_bot.utils.state_logger import logged
-
+from provider_bot.utils.aggressive import aggressive_filter
 
 @app.handle(default=True)
 @logged
+@aggressive_filter
 def default(request, responder):
     """This is a default handler."""
     responder.reply('Перепрошую?')
@@ -13,12 +14,14 @@ def default(request, responder):
 
 @app.handle(intent='thanks')
 @logged
+@aggressive_filter
 def thanks(request, responder):
     responder.reply(['Прошу.', 'Завжди рада допомогти.'])
 
 
 @app.handle(intent='small_talk')
 @logged
+@aggressive_filter
 def small_talk(request, responder):
     responses = ['Я би з задоволенням з вами поспілкувалася, але можу допомогти лише з послугами компанії "Смідл."',
                  'На жаль, на це відповісти я не зможу.',
@@ -33,6 +36,7 @@ def small_talk(request, responder):
 
 @app.handle(intent='confirmation')
 @logged
+@aggressive_filter
 def confirmation(request, responder):
     responder.reply(['Чим саме я можу вам допомогти?',
                      'Сформулюйте, будь ласка, ваш запит.'])
@@ -40,6 +44,7 @@ def confirmation(request, responder):
 
 @app.handle(intent='greet')
 @logged
+@aggressive_filter
 def welcome(request, responder):
     responder.frame['greeted'] = responder.frame.get('greeted', False)
     username = get_user_data(request.context['username'])['username']
@@ -57,23 +62,27 @@ def welcome(request, responder):
 
 @app.handle(intent='abort')
 @logged
+@aggressive_filter
 def abort(request, responder):
     responder.reply("Буду рада вам допомогти, якщо виникнуть проблеми.")
 
 
 @app.handle(intent='goodbye')
 @logged
+@aggressive_filter
 def goodbye(request, responder):
     responder.reply(['До побачення!', 'До зустрічі!', "На зв'язку!", "Бувайте!"])
 
 
 @app.handle(intent='suicide')
 @logged
+@aggressive_filter
 def suicide(request, responder):
     responder.reply("Ми готові вас вислухати, зачекайте хвилинку.")
 
 @app.handle(intent='clarify')
 @logged
+@aggressive_filter
 def clarify(request, responder):
     responder.reply(['Що саме вас цікавить?',
                      'Сформулюйте, будь ласка, ваш запит.',

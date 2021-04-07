@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from provider_bot.root import app
 from provider_bot.bot_db import get_user_data, call_home_service
 from provider_bot.utils.state_logger import logged
+from provider_bot.utils.aggressive import aggressive_filter
 
 parsing_format = "%Y-%m-%dT%H:%M"
 def parse_date(date):
@@ -31,12 +32,14 @@ def verify(request, responder, return_to):
 
 @app.handle(intent='home_service')
 @logged
+@aggressive_filter
 def home_service(request, responder):
     responder.frame['with_balance'] = False
     balance_and_home_service(request, responder)
 
 @app.handle(intent='balance_and_home_service')
 @logged
+@aggressive_filter
 def balance_and_home_service(request, responder):
     if request.intent == 'balance_and_home_service':
         responder.frame['with_balance'] = True
@@ -92,6 +95,7 @@ def balance_and_home_service(request, responder):
 
 @app.handle(targeted_only=True)
 @logged
+@aggressive_filter
 def balance_and_home_service_day(request, responder):
     if request.intent == 'abort':
         responder.reply('Зрозуміло. Чим ще ми можемо вам допомогти?')
@@ -136,6 +140,7 @@ def balance_and_home_service_day(request, responder):
 
 @app.handle(targeted_only=True)
 @logged
+@aggressive_filter
 def balance_and_home_service_hour(request, responder):
     if request.intent == 'abort':
         responder.reply('Зрозуміло. Чим ще ми можемо вам допомогти?')
@@ -169,6 +174,7 @@ def balance_and_home_service_hour(request, responder):
 
 @app.handle(targeted_only=True)
 @logged
+@aggressive_filter
 def balance_and_home_service_confirm(request, responder):
     if verify(request, responder, balance_and_home_service_confirm):
         return
