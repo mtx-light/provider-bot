@@ -17,10 +17,10 @@ def aggressive_filter(state):
             state(request, responder)
         else:
             responder.frame["aggressive_count"] = responder.frame.get("aggressive_count", 0) + 1
-            if responder.frame["aggressive_count"] > 3:
+            if responder.frame["aggressive_count"] > 2:
                 responder.frame["aggressive_count"] = 0
                 responder.reply("Заспокойтесь, ми з'єднаємо вас з оператором!")
             else:
-                responder.reply("Скоро до оператора договоришся.")
+                responder.reply("Заспокойтеся, будь ласка, ми вирішимо вашу проблему.")
     _state.__name__ = state.__name__
     return _state

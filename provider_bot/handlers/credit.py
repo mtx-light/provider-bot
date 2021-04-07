@@ -34,7 +34,7 @@ def turn_on_credit(request, responder):
     if request.intent == 'abort':
         responder.reply('Зрозуміло. Чим ще можемо вам допомогти?')
         return
-    if request.intent == 'confirmation':
+    if request.intent in ['confirmation', 'clarify']:
         if not responder.frame.get('verified', False):
             responder.params.target_dialogue_state = 'verify_service_number'
             responder.frame['return_to'] = turn_on_credit_continue

@@ -70,7 +70,7 @@ def balance_and_home_service(request, responder):
     if verify(request, responder, balance_and_home_service):
         return
     else:
-        if request.intent in ['balance_and_home_service', 'verification']:
+        if request.intent in ['balance_and_home_service', 'verification', 'home_service']:
             show_balance(request, responder)
             responder.reply("Ви бажаєте залишити заявку на виклик майстра додому?")
             responder.params.target_dialogue_state = 'balance_and_home_service'
