@@ -28,6 +28,10 @@ def change_service_plan_selection(request, responder):
     if request.intent == 'abort':
         responder.reply("Зрозуміло. Чим ще ми можемо вам допомогти?")
         return
+    if request.intent == 'clarify':
+        responder.reply("- Смідл Спорт HD Pro +100\n- Смідл Power Time Pro +200\n- Premium HD +200")
+        responder.params.target_dialogue_state = 'change_service_plan_selection'
+        return
     if request.intent == 'specify_service_plan':
         selected_plan = None
         for e in request.entities:

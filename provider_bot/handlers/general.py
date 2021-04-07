@@ -20,10 +20,10 @@ def thanks(request, responder):
 @app.handle(intent='small_talk')
 @logged
 def small_talk(request, responder):
-    responses = ['Я би з задоволенням з вами поспілкувалася, але можу допомогти лише з послугами компанії "Воля."',
+    responses = ['Я би з задоволенням з вами поспілкувалася, але можу допомогти лише з послугами компанії "Смідл."',
                  'На жаль, на це відповісти я не зможу.',
-                 'Я розумію, що вам цікаво зі мною погратися, але я не найкращий співбесідник, якщо справа не стосується послуг компанії "Воля"',
-                 'Що ж, якщо будуть питання щодо послуг компанії "Воля" - звертайтесь.']
+                 'Я розумію, що вам цікаво зі мною погратися, але я не найкращий співбесідник, якщо справа не стосується послуг компанії "Смідл"',
+                 'Що ж, якщо будуть питання щодо послуг компанії "Смідл" - звертайтесь.']
     responder.frame['small_talk_cycle'] = responder.frame.get('small_talk_cycle', 0)
     responder.reply(responses[responder.frame['small_talk_cycle']])
     responder.frame['small_talk_cycle'] += 1
@@ -71,3 +71,10 @@ def goodbye(request, responder):
 @logged
 def suicide(request, responder):
     responder.reply("Ми готові вас вислухати, зачекайте хвилинку.")
+
+@app.handle(intent='clarify')
+@logged
+def clarify(request, responder):
+    responder.reply(['Що саме вас цікавить?',
+                     'Сформулюйте, будь ласка, ваш запит.',
+                     'Чим саме я можу вам допомогти?'])

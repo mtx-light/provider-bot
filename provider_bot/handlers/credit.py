@@ -15,7 +15,7 @@ def get_credit(request, responder):
     if request.intent == 'abort':
         responder.reply('Можливо у вас є ще якісь питання?')
         return
-    if request.intent in ['confirmation', 'get_credit', 'repeat']:
+    if request.intent in ['confirmation', 'get_credit', 'repeat', 'clarify']:
         responder.params.target_dialogue_state = 'turn_on_credit'
         responder.reply('З послугою "Кредит довіри" ви можете відновити постачання інтернету одразу, '
                         'а заплатити протягом 10 днів. Бажаєте підключити цю послугу зараз?')
