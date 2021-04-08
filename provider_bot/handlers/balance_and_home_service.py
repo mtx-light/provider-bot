@@ -76,6 +76,8 @@ def balance_and_home_service(request, responder):
             responder.params.target_dialogue_state = 'balance_and_home_service'
             return
         if request.intent == 'abort':
+            responder.frame['balance_and_home_service_day'] = None
+            responder.frame['balance_and_home_service_hour'] = None
             responder.reply("Зрозуміло. Чим ще ми можемо вам допомогти?")
             return
         if request.intent == 'confirmation':
@@ -98,6 +100,8 @@ def balance_and_home_service(request, responder):
 @aggressive_filter
 def balance_and_home_service_day(request, responder):
     if request.intent == 'abort':
+        responder.frame['balance_and_home_service_day'] = None
+        responder.frame['balance_and_home_service_hour'] = None
         responder.reply('Зрозуміло. Чим ще ми можемо вам допомогти?')
         return
     day = None
@@ -143,6 +147,8 @@ def balance_and_home_service_day(request, responder):
 @aggressive_filter
 def balance_and_home_service_hour(request, responder):
     if request.intent == 'abort':
+        responder.frame['balance_and_home_service_day'] = None
+        responder.frame['balance_and_home_service_hour'] = None
         responder.reply('Зрозуміло. Чим ще ми можемо вам допомогти?')
         return
     hour = None
@@ -187,6 +193,8 @@ def balance_and_home_service_confirm(request, responder):
         day = responder.frame['balance_and_home_service_day']
         hour = responder.frame['balance_and_home_service_hour']
         call_home_service(responder.frame['user']['id'], day, hour)
+        responder.frame['balance_and_home_service_day'] = None
+        responder.frame['balance_and_home_service_hour'] = None
         responder.reply(f'Заявку на виклик майстра на {str(day)[:10]} {str(hour)[11:16]} створено.\nОчікуйте на дзвінок від майстра.')
         responder.reply('Чим ще можемо вам допомогти?')
         return
