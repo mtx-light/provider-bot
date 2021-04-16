@@ -5,7 +5,7 @@ import sqlite3
 datetime_format = "%Y-%m-%d %H:%M:%S"
 parsing_format = "%Y-%m-%dT%H:%M"
 
-db = sqlite3.connect('database.db')
+db = sqlite3.connect('database.db', check_same_thread=False)
 cur = db.cursor()
 
 def create_database():

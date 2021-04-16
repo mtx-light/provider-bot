@@ -57,7 +57,7 @@ def balance_and_home_service(request, responder):
         if hour or responder.frame.get('balance_and_home_service_hour'):
             if not responder.frame.get('balance_and_home_service_hour'):
                 responder.frame['balance_and_home_service_hour'] = hour
-            balance_and_home_service_hour(request, responder)
+            balance_and_home_service_confirm(request, responder)
             return
         else:
             if verify(request, responder, balance_and_home_service):
@@ -161,7 +161,7 @@ def balance_and_home_service_hour(request, responder):
         responder.frame['balance_and_home_service_hour_count'] = responder.frame.get('balance_and_home_service_hour_count', 0) + 1
         if responder.frame['balance_and_home_service_hour_count'] < 3:
             responder.params.target_dialogue_state = 'balance_and_home_service_hour'
-            responder.reply('Повторіть, будь ласка, на яку годину ви бажаєте викликати майстра? Ви можете обрати годину.')
+            responder.reply('Повторіть, будь ласка, на яку годину ви бажаєте викликати майстра? Наприклад: 17:00')
             return
         else:
             responder.frame['balance_and_home_service_hour_count'] = 0
