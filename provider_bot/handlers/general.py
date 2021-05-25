@@ -53,7 +53,7 @@ def confirmation(request, responder):
 @aggressive_filter
 def welcome(request, responder):
     responder.frame['greeted'] = responder.frame.get('greeted', False)
-    username = get_user_data(request.context['username'])['username']
+    username = get_user_data(request.context.get('username'))['username']
     if not responder.frame['greeted']:
         responder.frame['greeted'] = True
         if username:

@@ -13,7 +13,7 @@ logger = open(f'loggs/states{timestamp()}.txt', 'w')
 def logged(state):
     def _state(request, responder):
         state_name = state.__name__
-        username = request.context['username']
+        username = request.context.get('username')
         intent = request.intent
         request_text = request.text
         entities = request.entities

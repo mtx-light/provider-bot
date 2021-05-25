@@ -56,7 +56,7 @@ def get_user(username):
 
 def create_user(username, balance=1234, repair=False):
     if not username:
-        username = 'user_' + str(random.randint(10000000))
+        username = 'user_' + str(random.randint(0, 10000000))
     cur.execute('INSERT INTO users (username, balance, repair) VALUES (?, ?, ?);', (username, balance, repair))
     db.commit()
     return get_user(username)
