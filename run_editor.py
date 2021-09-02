@@ -24,6 +24,7 @@ def get_intents():
     intents = get_folders_names(path_to_intents)
     return jsonify({'intents': intents})
 
+
 @api.route('/template', methods=['GET'])
 def get_template():
     domain = request.args.get('domain')
@@ -31,6 +32,7 @@ def get_template():
     path_to_intent = os.path.join(TEMPLATES_FOLDER, domain, intent)
     template = read_actual_template(path_to_intent)
     return jsonify({'expressions': template})
+
 
 @api.route('/template', methods=['POST'])
 def post_template():
@@ -41,15 +43,18 @@ def post_template():
     save_actual_template(path_to_intent, template_data['expressions'])
     return jsonify({'status': 'OK'})
 
+
 @api.route('/entity-types', methods=['GET'])
 def get_entity_types():
     entities_json = read_json(os.path.join(ENTITIES_FOLDER, 'entity_dictionary.json'))
     return jsonify({'entity_types': list(entities_json["entities"].keys())})
+
 
 @api.route('/entity-roles', methods=['GET'])
 def get_entity_roles():
     entity_type = request.args.get('entity-type')
     entities_json = read_json(os.path.join(ENTITIES_FOLDER, 'entity_dictionary.json'))
     return jsonify({'entity_roles': entities_json["entities"][entity_type]['roles']})
+
 
 api.run(host='0.0.0.0', debug=True, port=3333)

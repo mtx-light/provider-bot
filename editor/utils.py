@@ -27,6 +27,7 @@ def save_actual_template(template_folder, expressions):
     with open(os.path.join(template_folder, str(actual_number + 1) + '.txt'), 'w') as f:
         f.write("\n".join(expressions))
 
+
 def read_json(file_path):
     with open(file_path) as f:
         return json.load(f)
