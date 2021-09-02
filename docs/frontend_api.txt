@@ -1,0 +1,31 @@
+Отримати список доменів
+GET /domains
+resp:
+{"domains": [str]}
+
+Отримати список інтентів по заданому домену
+GET /intents?domain=...
+resp:
+{"intents": [str]}
+
+Отримати темплейт для заданого інтенту і домену
+GET /template?domain=...&intent=...
+resp:
+{"expressions": [str]}
+
+Зберігти темплейт для заданого інтенту і домену з іменем +1
+POST /template?domain=...&intent=...
+body:
+{"expressions": [str]}
+resp:
+{"status": "ok"}
+
+Отримати типи ентіті
+GET /entity-types
+resp:
+{"entity_types": [str]}
+
+Отримати ролі для заданого ентіті-тайпа
+GET /entity-roles?entity-type=...
+resp:
+{"entity_roles": [str]}
