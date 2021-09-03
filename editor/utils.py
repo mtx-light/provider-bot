@@ -31,3 +31,24 @@ def save_actual_template(template_folder, expressions):
 def read_json(file_path):
     with open(file_path) as f:
         return json.load(f)
+
+
+def save_json(file_path, data):
+    with open(file_path, 'w') as f:
+        f.write(json.dumps(data, ensure_ascii=False))
+
+
+def update_gazetteer(file_path, data):
+    with open(file_path, 'w') as f:
+        f.write('\n'.join(e['cname'] for e in data['entities']))
+
+
+def update_dictionary(file_path, entity_type, data):
+    dictionary = None
+    with open(file_path) as f:
+        dictionary = json.load(f)
+
+    dictionary['entities'][entity_type]['cnames'] = list(e['cname'] for e in data['entities'])
+
+    with open(file_path, 'w') as f:
+        f.write(json.dumps(dictionary, ensure_ascii=False))

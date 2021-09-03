@@ -29,3 +29,23 @@ resp:
 GET /entity-roles?entity-type=...
 resp:
 {"entity_roles": [str]}
+
+Отримати mapping.json для заданого ентіті-тайпа
+GET /entity-type?entity-type=...
+resp:
+{"entities": [{
+      "id": str,
+      "cname": str,
+      "whitelist": [str]
+    }]}
+
+Зберігти mapping.json для заданого ентіті-тайпа
+POST /entity-type?entity-type=...
+body:
+{"entities": [{
+      "id": str,
+      "cname": str,
+      "whitelist": [str]
+    }]}
+resp:
+{"status": "ok"}
