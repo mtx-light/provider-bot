@@ -2,13 +2,17 @@ import os
 from flask import Flask, request, jsonify
 from editor.utils import get_folders_names, read_actual_template, save_actual_template, read_json, save_json, \
     update_gazetteer, update_dictionary
+from distutils.dir_util import copy_tree
 
 APP_FOLDER = os.path.join('.', 'provider_bot')
 EDITOR_FOLDER = os.path.join('.', 'editor')
 TEMPLATES_FOLDER = os.path.join(EDITOR_FOLDER, 'templates')
 ENTITIES_FOLDER = os.path.join(EDITOR_FOLDER, 'entities')
+MODELS_FOLDER = os.path.join(EDITOR_FOLDER, 'models')
 
 api = Flask(__name__)
+
+selected_model = None
 
 
 @api.route('/domains', methods=['GET'])
@@ -74,5 +78,36 @@ def post_entity_type():
     update_dictionary(os.path.join(ENTITIES_FOLDER, 'entity_dictionary.json'), entity_type, entity_type_data)
     return jsonify({'status': 'OK'})
 
+@api.route('/models', methods=['GET'])
+def get_models():
+    models = get_folders_names(MODELS_FOLDER)
+    return jsonify({'models': models})
+
+@api.route('/rename-model', methods=['POST'])
+def rename_model():
+    old_name = request.args.get('old-name')
+    new_name = request.args.get('new-name')
+    if os.path.exists(os.path.join(MODELS_FOLDER, old_name)):
+        if not os.path.exists(os.path.join(MODELS_FOLDER, new_name)):
+            os.rename(os.path.join(MODELS_FOLDER, old_name), os.path.join(MODELS_FOLDER, new_name))
+            return jsonify({'status': 'OK'})
+        else:
+            return jsonify({'status': 'FAIL',
+                            'reason': "Model {} is already exist".format(new_name)})
+    else:
+        return jsonify({'status': 'FAIL',
+                        'reason': "Model {} is not exists".format(old_name)})
+
+@api.route('/select-model', methods=['POST'])
+def select_model():
+    model = request.args.get('model')
+    if os.path.exists(os.path.join(MODELS_FOLDER, model)):
+        global selected_model
+        selected_model = model
+        copy_tree(os.path.join(MODELS_FOLDER, selected_model), os.path.join(APP_FOLDER, '.generated'))
+        return jsonify({'status': 'OK'})
+    else:
+        return jsonify({'status': 'FAIL',
+                        'reason': "Model {} is not exists".format(model)})
 
 api.run(host='0.0.0.0', debug=True, port=3333)

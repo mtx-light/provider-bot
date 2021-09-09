@@ -134,3 +134,4 @@ share/doc
 loggs/*
 tests/loggs/*
 provider_bot/.generated/*
+editor/models/*
