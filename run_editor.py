@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from editor.utils import get_folders_names, read_actual_template, save_actual_template, read_json, save_json, \
-    update_gazetteer, update_dictionary
+    update_gazetteer, update_dictionary, generate_from_template
 from distutils.dir_util import copy_tree
 
 APP_FOLDER = os.path.join('.', 'provider_bot')
@@ -78,10 +78,12 @@ def post_entity_type():
     update_dictionary(os.path.join(ENTITIES_FOLDER, 'entity_dictionary.json'), entity_type, entity_type_data)
     return jsonify({'status': 'OK'})
 
+
 @api.route('/models', methods=['GET'])
 def get_models():
     models = get_folders_names(MODELS_FOLDER)
     return jsonify({'models': models})
+
 
 @api.route('/rename-model', methods=['POST'])
 def rename_model():
@@ -98,6 +100,7 @@ def rename_model():
         return jsonify({'status': 'FAIL',
                         'reason': "Model {} is not exists".format(old_name)})
 
+
 @api.route('/select-model', methods=['POST'])
 def select_model():
     model = request.args.get('model')
@@ -109,5 +112,21 @@ def select_model():
     else:
         return jsonify({'status': 'FAIL',
                         'reason': "Model {} is not exists".format(model)})
+
+
+@api.route('/generate-train-data', methods=['POST'])
+def generate_train_date():
+    domains = get_folders_names(TEMPLATES_FOLDER)
+    entity_dictionary = os.path.join(ENTITIES_FOLDER, 'entity_dictionary.json')
+    for domain in domains:
+        domain_path = os.path.join(TEMPLATES_FOLDER, domain)
+        intents = get_folders_names(domain_path)
+        for intent in intents:
+            intent_template_folder = os.path.join(domain_path, intent)
+            generate_from_template(intent_template_folder,
+                                   os.path.join(APP_FOLDER, 'domains', domain, intent, 'train.txt'),
+                                   entity_dictionary)
+    return jsonify({'status': 'OK'})
+
 
 api.run(host='0.0.0.0', debug=True, port=3333)

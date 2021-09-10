@@ -2,9 +2,5 @@
   "service_plan": {
     "roles": ["primary", "secondary"],
     "cnames": ["Смідл Спорт HD Pro +100", "Смідл Smart HD +100", "Смідл Power Time Pro +200", "Premium HD +200"]
-  },
-  "synthetic_entity": {
-    "roles": [],
-    "cnames": ["foo", "bar"]
   }
 }}

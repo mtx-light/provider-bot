@@ -9,6 +9,6 @@
 Виходь
 Давай спочатку
 Не зараз
-Та не хочу я
-Відстань
+Та не хочу я {service_plan}
+Відстань, {service_plan|primary} та {service_plan|secondary}
 Stope
