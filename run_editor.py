@@ -80,7 +80,7 @@ def post_entity_type():
         return jsonify({'status': 'OK'})
     else:
         return jsonify({'status': 'FAIL',
-                        'reason': "Type {} is system entity type"})
+                        'reason': "Type {} is system entity type".format(entity_type)})
 
 
 @api.route('/models', methods=['GET'])
