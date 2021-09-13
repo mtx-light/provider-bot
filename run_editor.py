@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from editor.utils import get_folders_names, read_actual_template, save_actual_template, read_json, save_json, \
-    update_gazetteer, update_dictionary, generate_from_template
+    update_gazetteer, update_dictionary, generate_from_template, is_system_entity
 from distutils.dir_util import copy_tree
 
 APP_FOLDER = os.path.join('.', 'provider_bot')
@@ -72,11 +72,15 @@ def get_entity_type():
 @api.route('/entity-type', methods=['POST'])
 def post_entity_type():
     entity_type = request.args.get('entity-type')
-    entity_type_data = request.get_json()
-    save_json(os.path.join(APP_FOLDER, 'entities', entity_type, 'mapping.json'), entity_type_data)
-    update_gazetteer(os.path.join(APP_FOLDER, 'entities', entity_type, 'gazetteer.txt'), entity_type_data)
-    update_dictionary(os.path.join(ENTITIES_FOLDER, 'entity_dictionary.json'), entity_type, entity_type_data)
-    return jsonify({'status': 'OK'})
+    if not is_system_entity(entity_type, os.path.join(ENTITIES_FOLDER, 'entity_dictionary.json')):
+        entity_type_data = request.get_json()
+        save_json(os.path.join(APP_FOLDER, 'entities', entity_type, 'mapping.json'), entity_type_data)
+        update_gazetteer(os.path.join(APP_FOLDER, 'entities', entity_type, 'gazetteer.txt'), entity_type_data)
+        update_dictionary(os.path.join(ENTITIES_FOLDER, 'entity_dictionary.json'), entity_type, entity_type_data)
+        return jsonify({'status': 'OK'})
+    else:
+        return jsonify({'status': 'FAIL',
+                        'reason': "Type {} is system entity type"})
 
 
 @api.route('/models', methods=['GET'])

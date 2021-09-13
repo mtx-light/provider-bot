@@ -1,6 +1,12 @@
 {"entities":{
   "service_plan": {
+    "is_system": false,
     "roles": ["primary", "secondary"],
     "cnames": ["Смідл Спорт HD Pro +100", "Смідл Smart HD +100", "Смідл Power Time Pro +200", "Premium HD +200"]
+  },
+  "sys_number": {
+    "is_system": true,
+    "rolse": ["house_number", "service_number"],
+    "cnames": ["12345678", "87654321", "21346578", "21346578", "37759492", "12", "32", "4", "18", "87", "54"]
   }
 }}

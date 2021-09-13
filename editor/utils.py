@@ -68,7 +68,8 @@ def substitute_template(template_line, entity_dictionary):
             else:
                 entity_type = placeholder.strip()
             canonical_names = entity_dictionary['entities'][entity_type]['cnames']
-            filled_templates.append(["{" + cname + "|" + entity_type + ("|" + role if role else "") + "}" for cname in canonical_names])
+            filled_templates.append(
+                ["{" + cname + "|" + entity_type + ("|" + role if role else "") + "}" for cname in canonical_names])
             template_line = template_line.replace(placeholder, "")
         return [template_line.format(*p) for p in itertools.product(*filled_templates)]
     else:
@@ -82,3 +83,8 @@ def generate_from_template(template_folder, train_file, entity_dictionary):
         with open(os.path.join(template_folder, str(actual_template) + '.txt')) as inpt:
             for case in inpt.readlines():
                 output.writelines(substitute_template(case, dictionary))
+
+
+def is_system_entity(entity_type, entity_dictionary_path):
+    dictionary = read_json(entity_dictionary_path)
+    return dictionary["entities"][entity_type]["is_system"]
