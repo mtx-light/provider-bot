@@ -2,6 +2,7 @@ import re
 import os
 import itertools
 import json
+from subprocess import Popen, PIPE
 from functools import lru_cache
 
 
@@ -88,3 +89,7 @@ def generate_from_template(template_folder, train_file, entity_dictionary):
 def is_system_entity(entity_type, entity_dictionary_path):
     dictionary = read_json(entity_dictionary_path)
     return dictionary["entities"][entity_type]["is_system"]
+
+
+def spawn_train_process():
+    return Popen(["python", "-m", "provider_bot", "build"], stdout=PIPE, stderr=PIPE)

@@ -1,7 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from editor.utils import get_folders_names, read_actual_template, save_actual_template, read_json, save_json, \
-    update_gazetteer, update_dictionary, generate_from_template, is_system_entity
+    update_gazetteer, update_dictionary, generate_from_template, is_system_entity, spawn_train_process
 from distutils.dir_util import copy_tree
 
 APP_FOLDER = os.path.join('.', 'provider_bot')
@@ -13,6 +13,7 @@ MODELS_FOLDER = os.path.join(EDITOR_FOLDER, 'models')
 api = Flask(__name__)
 
 selected_model = None
+train_process = None
 
 
 @api.route('/domains', methods=['GET'])
@@ -131,6 +132,34 @@ def generate_train_date():
                                    os.path.join(APP_FOLDER, 'domains', domain, intent, 'train.txt'),
                                    entity_dictionary)
     return jsonify({'status': 'OK'})
+
+
+@api.route('/train-model', methods=['POST'])
+def train_model():
+    global train_process
+    if not train_process:
+        train_process = spawn_train_process()
+        return jsonify({'status': 'OK'})
+    else:
+        return jsonify({'status': 'FAIL',
+                        'reason': "Model training is already running"})
+
+
+@api.route('/train-model-status', methods=['GET'])
+def train_model_status():
+    global train_process
+    if train_process:
+        return_code = train_process.poll()
+        if return_code is not None:
+            if return_code == 0:
+                copy_tree(os.path.join(APP_FOLDER, '.generated'), os.path.join(MODELS_FOLDER, 'generated'))
+            train_process = None
+            return jsonify({'status': 'DONE',
+                            'return_code': return_code})
+        else:
+            return jsonify({'status': 'IN_PROGRESS'})
+    else:
+        return jsonify({'status': 'NOT_STARTED'})
 
 
 api.run(host='0.0.0.0', debug=True, port=3333)
