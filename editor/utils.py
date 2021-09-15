@@ -31,6 +31,13 @@ def save_actual_template(template_folder, expressions):
         f.write("\n".join(expressions))
 
 
+def append_template(template_folder, expressions):
+    actual_number = actual_file_number(template_folder)
+    with open(os.path.join(template_folder, str(actual_number) + '.txt')) as old:
+        with open(os.path.join(template_folder, str(actual_number + 1) + '.txt'), 'w') as new:
+            new.write("\n".join([l.strip() for l in old.readlines()] + expressions))
+
+
 def read_json(file_path):
     with open(file_path) as f:
         return json.load(f)

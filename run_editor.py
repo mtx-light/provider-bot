@@ -1,8 +1,17 @@
+import importlib
 import os
+from datetime import datetime
+import re
+
+import pexpect
 from flask import Flask, request, jsonify
 from editor.utils import get_folders_names, read_actual_template, save_actual_template, read_json, save_json, \
-    update_gazetteer, update_dictionary, generate_from_template, is_system_entity, spawn_train_process
+    update_gazetteer, update_dictionary, generate_from_template, is_system_entity, spawn_train_process, \
+    append_template
 from distutils.dir_util import copy_tree
+import provider_bot
+import mindmeld
+import mindmeld.components.dialogue
 
 APP_FOLDER = os.path.join('.', 'provider_bot')
 EDITOR_FOLDER = os.path.join('.', 'editor')
@@ -14,6 +23,8 @@ api = Flask(__name__)
 
 selected_model = None
 train_process = None
+conversation = None
+classifier = None
 
 
 @api.route('/domains', methods=['GET'])
@@ -47,6 +58,16 @@ def post_template():
     template_data = request.get_json()
     path_to_intent = os.path.join(TEMPLATES_FOLDER, domain, intent)
     save_actual_template(path_to_intent, template_data['expressions'])
+    return jsonify({'status': 'OK'})
+
+
+@api.route('/append-to-template', methods=['POST'])
+def append_to_template():
+    domain = request.args.get('domain')
+    intent = request.args.get('intent')
+    template_data = request.get_json()
+    path_to_intent = os.path.join(TEMPLATES_FOLDER, domain, intent)
+    append_template(path_to_intent, template_data['expressions'])
     return jsonify({'status': 'OK'})
 
 
@@ -113,6 +134,11 @@ def select_model():
         global selected_model
         selected_model = model
         copy_tree(os.path.join(MODELS_FOLDER, selected_model), os.path.join(APP_FOLDER, '.generated'))
+        global conversation, classifier
+        if not conversation is None:
+            conversation.kill(0)
+        conversation = None
+        classifier = None
         return jsonify({'status': 'OK'})
     else:
         return jsonify({'status': 'FAIL',
@@ -152,7 +178,9 @@ def train_model_status():
         return_code = train_process.poll()
         if return_code is not None:
             if return_code == 0:
-                copy_tree(os.path.join(APP_FOLDER, '.generated'), os.path.join(MODELS_FOLDER, 'generated'))
+                dt = datetime.now()
+                current_datetime = "{}-{}-{}-{}-{}-{}".format(dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
+                copy_tree(os.path.join(APP_FOLDER, '.generated'), os.path.join(MODELS_FOLDER, current_datetime))
             train_process = None
             return jsonify({'status': 'DONE',
                             'return_code': return_code})
@@ -162,4 +190,27 @@ def train_model_status():
         return jsonify({'status': 'NOT_STARTED'})
 
 
-api.run(host='0.0.0.0', debug=True, port=3333)
+@api.route('/send-message', methods=['POST'])
+def send_message():
+    request_body = request.get_json()
+    global conversation, classifier
+    if conversation is None:
+        conversation = pexpect.spawn('python -m provider_bot converse', encoding='utf-8')
+        conversation.expect("You:")
+    if classifier is None:
+        importlib.reload(mindmeld)
+        importlib.reload(mindmeld.components.dialogue)
+        importlib.reload(provider_bot)
+        from provider_bot import app
+        from mindmeld.components.dialogue import Conversation
+        classifier = mindmeld.Conversation(app=mindmeld.Application('provider_bot'),
+                                           context={'username': 'inmost_light'})
+    conversation.sendline(request_body['message'])
+    conversation.expect("You:")
+    resp = re.findall(r"App: (.*)....\r\n", conversation.before)
+    classifier.say(request_body['message'])
+    return jsonify({'reply': resp,
+                    'intent': classifier.history[0]['request']['intent']})
+
+
+api.run(host='0.0.0.0', debug=True, port=3334)
