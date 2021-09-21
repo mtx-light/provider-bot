@@ -8,6 +8,7 @@ from provider_bot.utils.aggressive import aggressive_filter
 @logged
 @aggressive_filter
 def no_internet(request, responder):
+    responder.frame['current_topic'] = 'no_internet'
     if not responder.frame.get('verified', False):
         responder.params.target_dialogue_state = 'verify_service_number'
         responder.frame['return_to'] = no_internet
