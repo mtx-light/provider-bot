@@ -3,3 +3,4 @@ telebot
 pymorphy2
 pymorphy2-dicts-uk
 flask
+langdetect

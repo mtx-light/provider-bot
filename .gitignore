@@ -131,7 +131,4 @@ dmypy.json
 share/doc
 .idea/
 
-loggs/*
-tests/loggs/*
 provider_bot/.generated/*
-editor/models/*
